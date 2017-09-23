@@ -1,0 +1,15 @@
+server.port: 8080
+spring.profiles: default
+ideapool.security.jwt:
+  tokenExpirationTime: 10 # Number of minutes
+  refreshTokenExpTime: 43200 # Minutes of a month
+  
+spring.datasource:
+  url: "jdbc:h2:mem:testdb"
+  driverClassName: org.h2.Driver
+  username: sa
+  password: ""
+  data: "classpath*:data.sql"
+spring.jpa:
+  database-platform: org.hibernate.dialect.H2Dialect
+spring.h2.console.enabled: true
