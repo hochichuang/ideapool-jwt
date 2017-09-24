@@ -3,6 +3,8 @@ package com.codementor.ideapool.user;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -44,6 +46,8 @@ public class UserController {
 
     @Autowired
     private ObjectMapper mapper;
+
+    private static Pattern PASSWORD_PATTERN = Pattern.compile("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$");
 
     @RequestMapping(value = "/access-tokens/refresh", method = RequestMethod.POST)
     public void refreshAccessToken(@RequestBody TokenRequest token, HttpServletResponse response) throws IOException {
@@ -103,6 +107,12 @@ public class UserController {
             throw new IllegalArgumentException("user.name not provided");
         if (Strings.isNullOrEmpty(user.getPassword()))
             throw new IllegalArgumentException("user.password not provided");
+
+        Matcher m = PASSWORD_PATTERN.matcher(user.getPassword());
+        if (!m.matches()) {
+            throw new IllegalArgumentException(
+                    "user.password not valid, length > 8 and contains at least 1 digit/upper/lower letter");
+        }
 
         user.setPassword(encoder.encode(user.getPassword()));
         this.userService.save(user);
