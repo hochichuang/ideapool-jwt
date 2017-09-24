@@ -20,6 +20,7 @@ import javax.validation.constraints.Min;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "db_idea")
@@ -108,6 +109,7 @@ public class Idea {
         this.confidence = confidence;
     }
 
+    @JsonProperty("average_score")
     public float getAverageScore() {
         return averageScore;
     }
@@ -123,6 +125,7 @@ public class Idea {
         this.averageScore = (0f + impact + ease + confidence) / 3;
     }
 
+    @JsonProperty("created_at")
     public Date getCreatedAt() {
         return createdAt;
     }

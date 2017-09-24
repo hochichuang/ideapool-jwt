@@ -1,4 +1,4 @@
-package com.codementor.ideapool.auth;
+package com.codementor.ideapool.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

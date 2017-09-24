@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,7 +38,12 @@ public class IdeaController {
     private UserService userService;
 
     @RequestMapping(value = "/ideas", method = RequestMethod.GET)
-    public @ResponseBody List<Idea> getIdeas() throws IOException {
+    public @ResponseBody List<Idea> getIdeas(
+            @RequestParam(name = "page", required = false, defaultValue = "1") int page) throws IOException {
+        if (page <= 0) {
+            throw new IllegalArgumentException("param page cannot be negative");
+        }
+
         String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (Strings.isNullOrEmpty(email)) {
@@ -47,7 +53,7 @@ public class IdeaController {
 
         User user = userService.getByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
-        List<Idea> result = ideaService.getIdeasByUserId(user.getId()).orNull();
+        List<Idea> result = ideaService.getIdeasByUserId(user.getId(), page - 1).orNull();
 
         if (result != null) {
             return result;
@@ -96,7 +102,7 @@ public class IdeaController {
         }
 
         String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (email.equals(idea.getUser().getEmail())) {
+        if (email != null && email.equals(idea.getUser().getEmail())) {
             ideaService.delete(idea);
         } else {
             throw new AuthorizationServiceException("cannot delete idea with user: " + email);
@@ -126,7 +132,7 @@ public class IdeaController {
         }
 
         String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (email.equals(oldIdea.getUser().getEmail())) {
+        if (email != null && email.equals(oldIdea.getUser().getEmail())) {
             oldIdea.setContent(idea.getContent());
             oldIdea.setImpact(idea.getImpact());
             oldIdea.setEase(idea.getEase());

@@ -18,7 +18,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
+import com.codementor.ideapool.model.LoginRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 
@@ -31,9 +33,9 @@ public class LoginProcessingFilter extends AbstractAuthenticationProcessingFilte
 
     private final ObjectMapper objectMapper;
 
-    public LoginProcessingFilter(String defaultProcessUrl, AuthenticationSuccessHandler successHandler,
+    public LoginProcessingFilter(RequestMatcher matcher, AuthenticationSuccessHandler successHandler,
             AuthenticationFailureHandler failureHandler, ObjectMapper objectMapper) {
-        super(defaultProcessUrl);
+        super(matcher);
         this.successHandler = successHandler;
         this.failureHandler = failureHandler;
         this.objectMapper = objectMapper;
@@ -52,8 +54,7 @@ public class LoginProcessingFilter extends AbstractAuthenticationProcessingFilte
 
         LoginRequest loginRequest = objectMapper.readValue(request.getReader(), LoginRequest.class);
 
-        if (Strings.isNullOrEmpty(loginRequest.getEmail())
-                || com.google.common.base.Strings.isNullOrEmpty(loginRequest.getPassword())) {
+        if (Strings.isNullOrEmpty(loginRequest.getEmail()) || Strings.isNullOrEmpty(loginRequest.getPassword())) {
             throw new AuthenticationServiceException("Username or Password not provided");
         }
 

@@ -33,19 +33,14 @@ public class User {
     @Column(name = "avatar_url")
     private String avatarUrl;
 
+    @Column(name = "refresh_token")
+    private String refreshToken;
+
     @OneToMany
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private List<Idea> ideas;
 
     public User() {
-    }
-
-    public User(String id, String email, String name, String password, String avatarUrl) {
-        this.id = id;
-        this.email = email;
-        this.name = name;
-        this.password = password;
-        this.avatarUrl = avatarUrl;
     }
 
     public String getId() {
@@ -70,6 +65,14 @@ public class User {
 
     public String getAvatarUrl() {
         return avatarUrl;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 
     public List<Idea> getIdeas() {

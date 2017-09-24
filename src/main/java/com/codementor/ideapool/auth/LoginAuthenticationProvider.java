@@ -25,14 +25,12 @@ public class LoginAuthenticationProvider implements AuthenticationProvider {
     public static final List<GrantedAuthority> DEFAULT_AUTHORITIES = Arrays
             .asList(new SimpleGrantedAuthority("NORMAL_USER"));
 
-    private final BCryptPasswordEncoder encoder;
-    private final UserService userService;
+    @Autowired
+    private BCryptPasswordEncoder encoder;
 
     @Autowired
-    public LoginAuthenticationProvider(final UserService userService, final BCryptPasswordEncoder encoder) {
-        this.userService = userService;
-        this.encoder = encoder;
-    }
+    private UserService userService;
+
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {

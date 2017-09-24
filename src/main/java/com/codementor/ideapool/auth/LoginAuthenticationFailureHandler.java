@@ -33,7 +33,7 @@ public class LoginAuthenticationFailureHandler implements AuthenticationFailureH
             AuthenticationException e) throws IOException, ServletException {
 
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
 
         if (e instanceof BadCredentialsException) {
             mapper.writeValue(response.getWriter(),
@@ -42,7 +42,8 @@ public class LoginAuthenticationFailureHandler implements AuthenticationFailureH
             mapper.writeValue(response.getWriter(), ErrorResponse.of("Token has expired", HttpStatus.UNAUTHORIZED));
         }
 
-        mapper.writeValue(response.getWriter(), ErrorResponse.of("Authentication failed", HttpStatus.UNAUTHORIZED));
+        mapper.writeValue(response.getWriter(),
+                ErrorResponse.of("Authentication failed: " + e.getMessage(), HttpStatus.UNAUTHORIZED));
     }
 
 }

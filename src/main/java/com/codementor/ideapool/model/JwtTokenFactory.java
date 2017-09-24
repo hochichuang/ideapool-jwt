@@ -96,7 +96,12 @@ public class JwtTokenFactory {
             throw new IllegalArgumentException("Cannot create JWT Token without email");
         }
 
+        User user = userService.getByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+
         String token = Utils.generateRefreshToken();
+        user.setRefreshToken(token);
+        userService.save(user);
 
         return new JwtToken(token);
     }

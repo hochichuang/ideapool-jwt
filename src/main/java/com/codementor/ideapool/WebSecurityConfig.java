@@ -60,7 +60,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private ObjectMapper objectMapper;
 
     protected LoginProcessingFilter buildLoginProcessingFilter() throws Exception {
-        LoginProcessingFilter filter = new LoginProcessingFilter(FORM_BASED_LOGIN_ENTRY_POINT, successHandler,
+        LoginProcessingFilter filter = new LoginProcessingFilter(
+                new AntPathRequestMatcher(FORM_BASED_LOGIN_ENTRY_POINT, HttpMethod.POST.name()), successHandler,
                 failureHandler, objectMapper);
         filter.setAuthenticationManager(authenticationManager);
         return filter;
@@ -69,8 +70,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected JwtTokenAuthenticationProcessingFilter buildJwtTokenAuthenticationProcessingFilter() throws Exception {
         List<RequestMatcher> matcherList = Arrays.asList(
                 new AntPathRequestMatcher(FORM_BASED_LOGIN_ENTRY_POINT, HttpMethod.DELETE.name()),
-                new AntPathRequestMatcher(TOKEN_REFRESH_ENTRY_POINT), new AntPathRequestMatcher(ME_ENTRY_POINT),
-                new AntPathRequestMatcher(IDEAS_ENTRY_POINT));
+                new AntPathRequestMatcher(ME_ENTRY_POINT), new AntPathRequestMatcher(IDEAS_ENTRY_POINT));
         JwtTokenAuthenticationProcessingFilter filter = new JwtTokenAuthenticationProcessingFilter(failureHandler,
                 new OrRequestMatcher(matcherList));
         filter.setAuthenticationManager(authenticationManager);
@@ -106,11 +106,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
                 .authorizeRequests()
                     .antMatchers(HttpMethod.POST, FORM_BASED_LOGIN_ENTRY_POINT).permitAll()
-                    .antMatchers(USER_ENTRY_POINT).permitAll()
+                    .antMatchers(TOKEN_REFRESH_ENTRY_POINT, USER_ENTRY_POINT).permitAll()
             .and()
                 .authorizeRequests()
                     .antMatchers(HttpMethod.DELETE, FORM_BASED_LOGIN_ENTRY_POINT).authenticated()
-                    .antMatchers(TOKEN_REFRESH_ENTRY_POINT, ME_ENTRY_POINT, IDEAS_ENTRY_POINT).authenticated()
+                    .antMatchers(ME_ENTRY_POINT, IDEAS_ENTRY_POINT).authenticated()
             .and()
                 .addFilterBefore(buildLoginProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(buildJwtTokenAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
